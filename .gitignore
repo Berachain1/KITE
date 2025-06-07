@@ -1,0 +1,16 @@
+# Node.js dependencies
+node_modules/
+
+# Log files
+*.log
+
+# Environment variables
+.env
+
+# Private accounts file (jangan push private key)
+accounts.txt
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
