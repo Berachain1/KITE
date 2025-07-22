@@ -11,33 +11,38 @@ import moment from 'moment-timezone';
 import crypto from 'crypto';
 import { createParser } from 'eventsource-parser';
 
+function getTimestamp() {
+  return moment().tz('Asia/Jakarta').format('D/M/YYYY, HH:mm:ss');
+}
+
 function displayBanner() {
   const width = process.stdout.columns || 80;
 
-  const banner = [
-    '\x1b[91m           _____ _____  _____  _____   ____  _____    _____ _   _ _____  \x1b[0m',
-    '\x1b[91m     /\\   |_   _|  __ \\|  __ \\|  __ \\ / __ \\|  __ \\  |_   _| \\ | |  __ \\ \x1b[0m',
-    '\x1b[91m    /  \\    | | | |__) | |  | | |__) | |  | | |__) |   | | |  \\| | |  | |\x1b[0m',
-    '\x1b[97m   / /\\ \\   | | |  _  /| |  | |  _  /| |  | |  ___/    | | | . ` | |  | |\x1b[0m',
-    '\x1b[97m  / ____ \\ _| |_| | \\ \\| |__| | | \\ \\| |__| | |       _| |_| |\\  | |__| |\x1b[0m',
-    '\x1b[97m /_/    \\_\\_____|_|  \\_\\_____/|_|  \\_\\\\____/|_|      |_____|_| \\_|_____/\x1b[0m',
-    '',
-    '\x1b[91m🇮🇩  Join My telegram channel\x1b[0m | t.me/AIRDROPRSIND123',
-    '\x1b[93mFor business DM : https://t.me/Annisaazzahra123\x1b[0m',
-    '='.repeat(80)
-  ];
+  const bannerLines = figlet.textSync('ANNISA', {
+    font: "ANSI Shadow",
+    horizontalLayout: 'fitted'
+  }).split('\n');
 
-  banner.forEach(line => {
-    console.log(line.padStart(Math.floor((width + line.length) / 2)));
+  bannerLines.forEach((line, index) => {
+    const paddedLine = line.padStart(line.length + Math.floor((width - line.length) / 2));
+    if (index < bannerLines.length / 2) {
+      console.log(chalk.redBright(paddedLine));
+    } else {
+      console.log(chalk.whiteBright(paddedLine));
+    }
   });
+
+  const info1 = '=== my TG contact 🚀 : Annisaazzahra123 ===';
+  const info2 = '✪ DAILY QUIZ & CHAT AI One click ✪';
+
+  console.log(chalk.cyanBright(' '.repeat(Math.floor((width - info1.length) / 2)) + info1));
+  console.log(chalk.yellowBright(' '.repeat(Math.floor((width - info2.length) / 2)) + info2 + '\n'));
 }
 
-// ✅gausahotakatik
 const rl = createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
-
 
 async function promptUser(question) {
   const answer = await rl.question(chalk.white(question));
@@ -46,10 +51,6 @@ async function promptUser(question) {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function getTimestamp() {
-  return moment().tz('Asia/Jakarta').format('HH:mm:ss');
 }
 
 async function typeText(text, color, noType = false) {
@@ -484,14 +485,14 @@ async function getWalletInfo(access_token, proxy = null, retryCount = 0) {
       config.httpAgent = new HttpsProxyAgent(proxy);
       config.httpsAgent = new HttpsProxyAgent(proxy);
     }
-    const response = await axios.get('https://ozone-point-system.prod.gokite.ai/leaderboard/me', config);
-    const { username, rank, totalXpPoints } = response.data.data;
-    if (!username || rank === undefined || totalXpPoints === undefined) {
+    const response = await axios.get('https://ozone-point-system.prod.gokite.ai/me', config);
+    const { username, rank, total_xp_points } = response.data.data.profile;
+    if (!username || rank === undefined || total_xp_points === undefined) {
       throw new Error('Invalid response: username, rank, or totalXpPoints missing');
     }
     spinner.succeed(chalk.green(` ┊ ✓ Info wallet diterima: ${username.slice(0, 8)}...`));
     await sleep(500);
-    return { username, rank, totalXpPoints };
+    return { username, rank, total_xp_points };
   } catch (err) {
     if (retryCount < maxRetries - 1) {
       spinner.text = chalk.cyan(` ┊ → Mengambil info wallet [Retry ke-${retryCount + 1}/${maxRetries}]`);
@@ -739,8 +740,8 @@ async function processAccounts(accounts, professorMessages, cryptoBuddyMessages,
   let failedChats = 0;
 
   const aiAgents = {
-    "Professor": "deployment_KiMLvUiTydioiHm7PWZ12zJU",
-    "Crypto Buddy": "deployment_ByVHjMD6eDb9AdekRIbyuz14",
+    "Professor": "deployment_BSfolnHm0er7rNprjQWYgNhQ",
+    "Crypto Buddy": "deployment_l3QYj1avTiZz2vH2daFJBGu1",
     "Sherlock": "deployment_OX7sn2D0WvxGUGK8CTqsU5VJ"
   };
   const agentNames = ["Professor", "Crypto Buddy", "Sherlock"];
@@ -809,9 +810,9 @@ async function processAccounts(accounts, professorMessages, cryptoBuddyMessages,
           return counts;
         }, {});
         console.log(chalk.yellow(' ┊ ┌── User Information ──'));
-        console.log(chalk.white(` ┊ │ Username: ${walletInfo.username.slice(0, 8)}...`));
+        console.log(chalk.white(` ┊ │ Username: ${walletInfo.username.slice(0, 9)}...`));
         console.log(chalk.white(` ┊ │ Rank: ${walletInfo.rank}`));
-        console.log(chalk.white(` ┊ │ Total XP Points: ${walletInfo.totalXpPoints}`));
+        console.log(chalk.white(` ┊ │ Total XP Points: ${walletInfo.total_xp_points}`));
         agentNames.forEach(agent => {
           console.log(chalk.white(` ┊ │ Agent ${agent}: ${agentCounts[agent] || 0}`));
         });
